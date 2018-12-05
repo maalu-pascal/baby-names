@@ -1,3 +1,9 @@
+Baby-Names
+
+Description: 
+A  web app that displays a list of baby names that a user submits. It has a simple text input  box with a button.The added names will  appear below it in a table format.
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

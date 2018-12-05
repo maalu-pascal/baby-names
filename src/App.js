@@ -1,25 +1,37 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import {NewName} from './components/nameInput.js'
+import {List} from './components/nameList.js'
 
 class App extends Component {
+  constructor(props){
+    super(props);
+    if(!localStorage.getItem("List")){
+      localStorage.setItem("List",JSON.stringify([]));
+    }
+
+    this.state = {
+      babyNameList: ''
+    }
+    
+    this.updateList = this.updateList.bind(this)
+  }
+
+  updateList() {
+    this.setState({babyNameList: JSON.parse(localStorage.getItem('List'))});
+  }
   render() {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
           <p>
-            Edit <code>src/App.js</code> and save to reload.
+            BABY NAMES
           </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
         </header>
+        <main>
+          <NewName updateList={this.updateList}/>
+          <List />
+        </main>
       </div>
     );
   }

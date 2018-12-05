@@ -32,7 +32,7 @@ class NewName extends Component {
 
         if (this.state.input === '') {
             error = 'Please enter a name';
-        } else if (list.find((name) => { return name === this.state.input })) {
+        } else if (list.find((data) => { return data.name.toUpperCase() === this.state.input.toUpperCase() })) {
             error = 'Name already exists';
          }
         else {
@@ -54,8 +54,14 @@ class NewName extends Component {
             this.setState({ error: '', showErrorMsg: false })
             console.log("Added a new name: ", this.state.input.trim());
 
+            let newName = {
+                id: Math.floor((Math.random()*1000000000000)+1),
+                name: this.state.input.trim(),
+                flag: false,
+            }
+
             let namelist = JSON.parse(localStorage.getItem("List"));
-            namelist.push(this.state.input);
+            namelist.push(newName);
             localStorage.setItem("List", JSON.stringify(namelist));
             this.props.updateList();
 

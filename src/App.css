@@ -1,12 +1,16 @@
 .App {
   /* border:3px solid; */
-  text-align: center;
+  /* text-align: center; */
 
 }
 .NewName {
   text-align: center;
   border:3px solid;
 
+}
+
+ul {
+  list-style-type: none;
 }
 
 .App-header {

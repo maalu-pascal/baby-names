@@ -57,6 +57,7 @@ class NewName extends Component {
             let newName = {
                 id: Math.floor((Math.random()*1000000000000)+1),
                 name: this.state.input.trim(),
+                date: new Date(),
                 flag: false,
             }
 
@@ -66,8 +67,8 @@ class NewName extends Component {
             this.props.updateList();
 
         } else {
-            console.log("Error: ", this.state.error);
-            this.setState({ error: validate, showErrorMsg: true });
+            
+            this.setState({ error: validate, showErrorMsg: true },console.log("Error: ", this.state.error));
         }
     }
     render() {

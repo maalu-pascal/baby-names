@@ -47,6 +47,7 @@ class App extends Component {
           </div>
           <br />
           <List sort={this.state.sort} updateList={this.updateList} />
+          <ListApp />
         </main>
       </div>
     );

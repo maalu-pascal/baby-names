@@ -1,25 +1,52 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { NewName } from './components/nameInput.js'
+import { List } from './components/nameList.js'
 
 class App extends Component {
+
+  constructor(props) {
+    super(props);
+    if (!localStorage.getItem("List")) {
+      localStorage.setItem("List", JSON.stringify([]));
+    }
+    this.state = {
+      babyNameList: '',
+      sort: 'alphabetic',
+    }
+    this.updateList = this.updateList.bind(this);
+    this.changeSort = this.changeSort.bind(this);
+  }
+
+  updateList() {
+    this.setState({ babyNameList: JSON.parse(localStorage.getItem('List')) });
+  }
+
+  changeSort(event) {
+    this.setState({sort: event.target.value});
+  }
+
   render() {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
           <p>
-            Edit <code>src/App.js</code> and save to reload.
+            BABY NAMES
           </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
         </header>
+        <main>
+          <br />
+          <NewName updateList={this.updateList} />
+          <br />
+          <div onChange={this.changeSort} >
+          <label>Sort: </label>&nbsp;
+            <label htmlFor="alphabetic"><input id="alphabetic" type="radio" name="nameSort" value='alphabetic' defaultChecked />Alphabetic</label>
+            <label htmlFor="time"><input id="time" type="radio" name="nameSort" value='time' />Time created </label>
+            <label htmlFor="custom"><input id="customized" type="radio" name="nameSort" value='custom' />Custom </label>
+          </div>
+          <br />
+          <List sort={this.state.sort} updateList={this.updateList} />
+        </main>
       </div>
     );
   }

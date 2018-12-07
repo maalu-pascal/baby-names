@@ -3,6 +3,14 @@ import React, { Component } from 'react';
 var placeholder = document.createElement("li");
 placeholder.className = "placeholder";
 
+let setLocalStorage = (name, data) => {
+    localStorage.setItem(name, JSON.stringify(data))
+};
+
+let getLocalStorage = (name) => {
+    return JSON.parse(localStorage.getItem(name));
+}
+
 class List extends Component {
     constructor(props) {
         super(props);
@@ -23,56 +31,51 @@ class List extends Component {
             return details;
         });
 
-        localStorage.setItem('List', JSON.stringify(newList))
+        setLocalStorage('List', newList);
         this.props.updateList();
 
     }
 
     //For custom list drag and drop.
     dragStart(e) {
-      this.dragged = e.currentTarget;
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/html', this.dragged);
-      console.log("start: ", e.dataTransfer);
+        this.dragged = e.currentTarget;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', this.dragged);
     }
 
     dragEnd(e) {
-      this.dragged.style.display = 'block';
-      this.dragged.parentNode.removeChild(placeholder);
-    //   console.log(this.over.dataset);
-      
-      // update state
-      var data = this.state.list;
-      console.log("data: ", data);
-      var from = Number(this.dragged.dataset.id);
-      var to = Number(this.over.dataset.id);
-      if(from < to) to--;
-      data.splice(to, 0, data.splice(from, 1)[0]);
-      console.log("data: ", from, to, data.splice(to, 0, data.splice(from, 1)[0]));
-      
-      this.setState({colors: data});
+        this.dragged.style.display = 'block';
+        this.dragged.parentNode.removeChild(placeholder);
+        let data = getLocalStorage('List');
+        let from = Number(this.dragged.dataset.id);
+        let to = Number(this.over.dataset.id);
+        if (from < to) to--;
+
+        data.splice(to, 0, data.splice(from, 1)[0]);
+
+        this.setState({ list: data });
+        setLocalStorage('List', data)
     }
+
     dragOver(e) {
-        // console.log(this.dragged);
-        
-      e.preventDefault();
-      this.dragged.style.display = "none";
-      if(e.target.className === 'placeholder') return;
-      this.over = e.target;
-      e.target.parentNode.insertBefore(placeholder, e.target);
+        e.preventDefault();
+        this.dragged.style.display = "none";
+        if (e.target.className === 'placeholder') return;
+        this.over = e.target;
+        e.target.parentNode.insertBefore(placeholder, e.target);
     }
-
-
 
     render() {
+
         let list = JSON.parse(localStorage.getItem("List"));
+
         if (list) {
             switch (this.props.sort) {
                 case 'alphabetic':
-                    console.log('alphabetic');
+                    console.log(this.props.sort);
                     list.sort((sortNameA, sortNameB) => {
-                        var nameA = sortNameA.name.toUpperCase();
-                        var nameB = sortNameB.name.toUpperCase();
+                        let nameA = sortNameA.name.toUpperCase();
+                        let nameB = sortNameB.name.toUpperCase();
                         if (nameA < nameB) {
                             return -1;
                         }
@@ -81,50 +84,45 @@ class List extends Component {
                         }
                         return 0;
                     });
-                    console.log(list);
                     break;
 
                 case 'time':
-                    console.log('time');
-                    list.sort((a, b) => { return a.date - b.date });
-                    console.log(list);
+                    console.log(this.props.sort);
+                    list.sort((dateA,dateB)=>{                    
+                        return  new Date(dateA.date) - new Date(dateB.date);
+                      });
                     break;
 
                 case 'custom':
-                console.log('custom');
-                // return <p>custom</p>;
-                var listItems = list.map((item, i) => {
-                    let nameChecked = (item.flag) ? 'checked' : '';
-                    let strikeName = (item.flag) ? <s>{item.name}</s> : (item.name);
+                    console.log(this.props.sort);
+                    let listItems = list.map((data, i) => {
+                        // let nameChecked = (data.flag) ? 'checked' : '';
+                        let strikeName = (data.flag) ? <s>{data.name}</s> : (data.name);
 
+                        return (
+                            <li data-id={i}
+                                key={i}
+                                draggable='true'
+                                onDragEnd={this.dragEnd.bind(this)}
+                                onDragStart={this.dragStart.bind(this)} >
+                                {strikeName}
+                            </li>
+                        )
+                    });
                     return (
-                        <li
-                            data-id={i}
-                            key={i}
-                            draggable='true'
-                            onDragEnd={this.dragEnd.bind(this)}
-                            onDragStart={this.dragStart.bind(this)}
-                        >{strikeName}
-                    </li>
+                        <ul onDragOver={this.dragOver.bind(this)} >
+                            {listItems}
+                        </ul>
                     )
-                });
-                return (
-                    <ul 
-                    onDragOver={this.dragOver.bind(this)}
-                    >
-                        {listItems}
-                    </ul>
-                )
-            // break;
 
                 default:
                     console.log('default');
             }
             return <ul>
-                {list.map((data) => {
+                {list.map((data, index) => {
                     let nameChecked = (data.flag) ? 'checked' : '';
                     let strikeName = (data.flag) ? <s>{data.name}</s> : (data.name);
-                    return <li key={data.name}>
+                    return <li key={index}>
                         <label htmlFor={data.name}>
                             <input type='checkbox' id='{data.name}' value={data.name} onChange={this.onCheck} checked={nameChecked} />{strikeName}
                         </label>

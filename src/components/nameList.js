@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 
-var placeholder = document.createElement("li");
-placeholder.className = "placeholder";
-
 let setLocalStorage = (name, data) => {
     localStorage.setItem(name, JSON.stringify(data))
 };
@@ -14,10 +11,9 @@ let getLocalStorage = (name) => {
 class List extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
             list: JSON.parse(localStorage.getItem('List')),
-        }
+        };
 
         this.onCheck = this.onCheck.bind(this);
     }
@@ -45,12 +41,11 @@ class List extends Component {
 
     dragEnd(e) {
         this.dragged.style.display = 'block';
-        this.dragged.parentNode.removeChild(placeholder);
-        let data = getLocalStorage('List');
         let from = Number(this.dragged.dataset.id);
         let to = Number(this.over.dataset.id);
         if (from < to) to--;
 
+        let data = getLocalStorage('List');
         data.splice(to, 0, data.splice(from, 1)[0]);
 
         this.setState({ list: data });
@@ -60,19 +55,21 @@ class List extends Component {
     dragOver(e) {
         e.preventDefault();
         this.dragged.style.display = "none";
-        if (e.target.className === 'placeholder') return;
         this.over = e.target;
-        e.target.parentNode.insertBefore(placeholder, e.target);
     }
 
     render() {
 
         let list = JSON.parse(localStorage.getItem("List"));
 
+        
+        if(list.length===0) {
+            return <p>No names inserted.</p>
+        }
+
         if (list) {
             switch (this.props.sort) {
                 case 'alphabetic':
-                    console.log(this.props.sort);
                     list.sort((sortNameA, sortNameB) => {
                         let nameA = sortNameA.name.toUpperCase();
                         let nameB = sortNameB.name.toUpperCase();
@@ -87,16 +84,14 @@ class List extends Component {
                     break;
 
                 case 'time':
-                    console.log(this.props.sort);
-                    list.sort((dateA,dateB)=>{                    
-                        return  new Date(dateA.date) - new Date(dateB.date);
-                      });
+                    list.sort((dateA, dateB) => {
+                        return new Date(dateA.date) - new Date(dateB.date);
+                    });
                     break;
 
                 case 'custom':
-                    console.log(this.props.sort);
                     let listItems = list.map((data, i) => {
-                        // let nameChecked = (data.flag) ? 'checked' : '';
+                        let nameChecked = (data.flag) ? 'checked' : '';
                         let strikeName = (data.flag) ? <s>{data.name}</s> : (data.name);
 
                         return (
@@ -105,7 +100,8 @@ class List extends Component {
                                 draggable='true'
                                 onDragEnd={this.dragEnd.bind(this)}
                                 onDragStart={this.dragStart.bind(this)} >
-                                {strikeName}
+                                    <input type='checkbox' id='{data.name}' value={data.name} onChange={this.onCheck} checked={nameChecked} />
+                                    {strikeName}
                             </li>
                         )
                     });

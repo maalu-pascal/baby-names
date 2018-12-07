@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import './App.css';
 import { NewName } from './components/nameInput.js'
 import { List } from './components/nameList.js'
-import { ListApp } from './components/trial.js'
 
 class App extends Component {
 
@@ -47,7 +46,6 @@ class App extends Component {
           </div>
           <br />
           <List sort={this.state.sort} updateList={this.updateList} />
-          <ListApp />
         </main>
       </div>
     );

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import { store } from './../redux/store';
 class ShowError extends Component {
     render() {
         if (!this.props.showErrorMsg) {
@@ -28,8 +28,7 @@ class NewName extends Component {
 
     validateName() {
         let error = '';
-        let list = JSON.parse(localStorage.getItem("List"));
-
+        let list = store.getState();
         if (this.state.input === '') {
             error = 'Please enter a name';
         } else if (list.find((data) => { return data.name.toUpperCase() === this.state.input.toUpperCase() })) {
@@ -60,22 +59,35 @@ class NewName extends Component {
                 date: new Date(),
                 flag: false,
             }
-
-            let namelist = JSON.parse(localStorage.getItem("List"));
-            namelist.push(newName);
             this.props.newName(newName.id, newName.name, newName.date, newName.flag);
 
         } else {
-            this.setState({ error: validate, showErrorMsg: true }, console.log("Error: ", this.state.error));
+            this.setState({ error: validate, showErrorMsg: true });
         }
     }
+
+    enterPressed(event) {
+        var code = event.keyCode || event.which;
+        if (code === 13) {
+            this.handleSubmit();
+        }
+    }
+
     render() {
         return <div className='p-2'>
             <label htmlFor="inputName">Enter Name :
-                <input type='text' id='inputName' placeholder='Name' onChange={this.onInputChange}></input>
+                <input
+                    type='text' id='inputName'
+                    placeholder='Name'
+                    onChange={this.onInputChange}
+                    onKeyPress={this.enterPressed.bind(this)}>
+                </input>
                 <button type='button' onClick={this.handleSubmit} >add</button>
             </label>
-            <ShowError error={this.state.error} showErrorMsg={this.state.showErrorMsg} className='error-message' />
+            <ShowError
+                error={this.state.error}
+                showErrorMsg={this.state.showErrorMsg}
+                className='error-message' />
         </div>
     }
 }

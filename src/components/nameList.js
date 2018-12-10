@@ -12,7 +12,7 @@ class List extends Component {
             list: getList(),
         };
         this.onCheck = this.onCheck.bind(this);
-        // this.customList = this.customList.bind(this);
+        this.customList = this.customList.bind(this);
     }
 
     customList = (list) => {
@@ -28,13 +28,13 @@ class List extends Component {
     }
 
     //For custom drag and drop list.
-    dragStart(e) {
-        this.dragged = e.currentTarget;
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/html', this.dragged);
+    dragStart(event) {
+        this.dragged = event.currentTarget;
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/html', this.dragged);
     }
 
-    dragEnd(e) {
+    dragEnd() {
         this.dragged.style.display = 'block';
         let from = Number(this.dragged.dataset.id);
         let to = Number(this.over.dataset.id);

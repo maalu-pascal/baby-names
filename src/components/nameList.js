@@ -1,38 +1,33 @@
 import React, { Component } from 'react';
+import { store } from './../redux/store';
 
-let setLocalStorage = (name, data) => {
-    localStorage.setItem(name, JSON.stringify(data))
-};
-
-let getLocalStorage = (name) => {
-    return JSON.parse(localStorage.getItem(name));
+let getList = () => {
+    return store.getState();
 }
 
 class List extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            list: JSON.parse(localStorage.getItem('List')),
+            list: getList(),
         };
-
         this.onCheck = this.onCheck.bind(this);
+        // this.customList = this.customList.bind(this);
+    }
+
+    customList = (list) => {
+        this.props.customDragDropList(list);
     }
 
     onCheck(event) {
-        let list = JSON.parse(localStorage.getItem('List'));
-        let newList = list.map((details) => {
-            if (details.name === event.target.value) {
-                details.flag = event.target.checked;
-            }
-            return details;
+        let list = getList();
+        let id = list.find((nameDetails) => {
+            return nameDetails.name === event.target.value
         });
-
-        setLocalStorage('List', newList);
-        this.props.updateList();
-
+        this.props.checkName(id.id, event.target.checked);
     }
 
-    //For custom list drag and drop.
+    //For custom drag and drop list.
     dragStart(e) {
         this.dragged = e.currentTarget;
         e.dataTransfer.effectAllowed = 'move';
@@ -45,11 +40,11 @@ class List extends Component {
         let to = Number(this.over.dataset.id);
         if (from < to) to--;
 
-        let data = getLocalStorage('List');
+        let data = getList();
         data.splice(to, 0, data.splice(from, 1)[0]);
 
         this.setState({ list: data });
-        setLocalStorage('List', data)
+        this.customList(data);
     }
 
     dragOver(e) {
@@ -59,11 +54,9 @@ class List extends Component {
     }
 
     render() {
+        let list = [...store.getState()];
 
-        let list = JSON.parse(localStorage.getItem("List"));
-
-        
-        if(list.length===0) {
+        if (list.length === 0) {
             return <p>No names inserted.</p>
         }
 
@@ -100,8 +93,8 @@ class List extends Component {
                                 draggable='true'
                                 onDragEnd={this.dragEnd.bind(this)}
                                 onDragStart={this.dragStart.bind(this)} >
-                                    <input type='checkbox' id='{data.name}' value={data.name} onChange={this.onCheck} checked={nameChecked} />
-                                    {strikeName}
+                                <input type='checkbox' id='{data.name}' value={data.name} onChange={this.onCheck} checked={nameChecked} />
+                                {strikeName}
                             </li>
                         )
                     });

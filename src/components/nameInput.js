@@ -34,7 +34,7 @@ class NewName extends Component {
             error = 'Please enter a name';
         } else if (list.find((data) => { return data.name.toUpperCase() === this.state.input.toUpperCase() })) {
             error = 'Name already exists';
-         }
+        }
         else {
 
             if (this.state.input.match(/\s/g) ? this.state.input.match(/\s/g).length > 1 : false) {
@@ -55,7 +55,7 @@ class NewName extends Component {
             console.log("Added a new name: ", this.state.input.trim());
 
             let newName = {
-                id: Math.floor((Math.random()*1000000000000)+1),
+                id: Math.floor((Math.random() * 1000000000000) + 1),
                 name: this.state.input.trim(),
                 date: new Date(),
                 flag: false,
@@ -63,12 +63,10 @@ class NewName extends Component {
 
             let namelist = JSON.parse(localStorage.getItem("List"));
             namelist.push(newName);
-            localStorage.setItem("List", JSON.stringify(namelist));
-            this.props.updateList();
+            this.props.newName(newName.id, newName.name, newName.date, newName.flag);
 
         } else {
-            
-            this.setState({ error: validate, showErrorMsg: true },console.log("Error: ", this.state.error));
+            this.setState({ error: validate, showErrorMsg: true }, console.log("Error: ", this.state.error));
         }
     }
     render() {
